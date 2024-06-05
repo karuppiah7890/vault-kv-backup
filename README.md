@@ -37,6 +37,56 @@ You can use a similar Vault Policy based on the mount path of the Vault KV v2 Se
 
 ## Usage
 
+```bash
+$ ./vault-kv-backup --help
+
+usage: vault-kv-backup [-quiet|--quiet] [-file|-file <vault-kv-backup-json-file-path>] <kv-mount-path>
+
+Note that the flags MUST come before the arguments
+
+arguments of ./vault-kv-backup:
+
+  <kv-mount-path> string
+    vault kv v2 secrets engine mount path for backing up the
+    vault kv v2 secrets engine secrets present in that mount
+    path
+
+flags of ./vault-kv-backup:
+
+  -file / --file string
+      vault kv backup json file path (default "vault_kv_backup.json")
+
+  -quiet / --quiet
+      quiet progress (default false).
+      By default vault-kv-backup CLI will show a lot of details
+      about the backup process and detailed progress during the
+      backup process
+
+  -h / -help / --help
+      show help
+
+examples:
+
+# show help
+vault-kv-backup -h
+vault-kv-backup --help
+
+# backs up all vault KV v2 Secrets Engine Secrets to the JSON file
+vault-kv-backup -file <path-to-vault-kv-backup-json-file> <kv-mount-path>
+
+# OR you can use --file too instead of -file
+
+vault-kv-backup --file <path-to-vault-kv-backup-json-file> <kv-mount-path>
+
+# quietly backs up all vault KV v2 Secrets Engine Secrets to the JSON file
+# this will just show dots (.) for progress
+vault-kv-backup -quiet -file <path-to-vault-kv-backup-json-file> <kv-mount-path>
+
+# OR you can use --quiet too instead of -quiet
+
+vault-kv-backup --quiet --file <path-to-vault-kv-backup-json-file> <kv-mount-path>
+```
+
 # Demo
 
 I created a new dummy local Vault instance in developer mode for this demo. I ran the Vault server like this -
