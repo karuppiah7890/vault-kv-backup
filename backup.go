@@ -1,7 +1,7 @@
 package main
 
 type VaultKvBackup struct {
-	Secrets map[string]interface{} `json:"secrets"`
+	Secrets map[string]map[string]interface{} `json:"secrets"`
 }
 
 func convertVaultKvBackupToJSON(vaultKvBackup VaultKvBackup) ([]byte, error) {

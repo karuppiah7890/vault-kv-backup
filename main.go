@@ -101,7 +101,7 @@ func main() {
 	}
 }
 
-func walkVaultKvMountPathAndGetSecrets(kvMounthPath, kvSecretsPath string, client *api.Client, quietProgress bool) map[string]interface{} {
+func walkVaultKvMountPathAndGetSecrets(kvMounthPath, kvSecretsPath string, client *api.Client, quietProgress bool) map[string]map[string]interface{} {
 	logicalClient := client.Logical()
 
 	listPath := path.Join(kvMounthPath, "metadata", kvSecretsPath)
@@ -117,7 +117,7 @@ func walkVaultKvMountPathAndGetSecrets(kvMounthPath, kvSecretsPath string, clien
 		} else {
 			fmt.Fprintf(os.Stdout, ".")
 		}
-		return map[string]interface{}{
+		return map[string]map[string]interface{}{
 			kvSecretsPath: getSecrets(kvMounthPath, kvSecretsPath, client),
 		}
 	}
@@ -132,7 +132,7 @@ func walkVaultKvMountPathAndGetSecrets(kvMounthPath, kvSecretsPath string, clien
 		log.Fatalf("no data found at path `%s`", listPath)
 	}
 
-	combinedSecretPathsAndSecrets := map[string]interface{}{}
+	combinedSecretPathsAndSecrets := map[string]map[string]interface{}{}
 
 	// TODO: `keys` can be of non-array type too. So, type assertion is required.
 	// No problems if `keys` is of array type.
