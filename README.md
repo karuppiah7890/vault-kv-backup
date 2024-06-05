@@ -562,6 +562,8 @@ Also, if there's not enough permissions in other ways also it won't work - like,
   - metadata of secrets
   - configuration of secrets engines
 
+- Allow for flags to come even after the arguments. This would require using better CLI libraries / frameworks like [`spf13/pflag`](https://github.com/spf13/pflag), [`spf13/cobra`](https://github.com/spf13/cobra), [`urfave/cli`](https://github.com/urfave/cli) etc than using the basic Golang's built-in `flag` standard library / package
+
 # Contributing
 
 Please look at https://github.com/karuppiah7890/vault-tooling-contributions for some basic details on how you can contribute
