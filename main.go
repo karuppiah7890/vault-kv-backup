@@ -12,7 +12,7 @@ import (
 )
 
 var usage = `
-usage: vault-kv-backup <kv-mount-path> [-quiet|--quiet] [-file|-file <vault-kv-backup-json-file-path>]
+usage: vault-kv-backup [-quiet|--quiet] [-file|-file <vault-kv-backup-json-file-path>] <kv-mount-path>
 
 Usage of ./vault-kv-backup:
 
@@ -32,21 +32,22 @@ examples:
 
 # show help
 vault-kv-backup -h
+vault-kv-backup --help
 
 # backs up all vault KV v2 Secrets Engine Secrets to the JSON file
-vault-kv-backup <kv-mount-path> -file <path-to-vault-kv-backup-json-file>
+vault-kv-backup -file <path-to-vault-kv-backup-json-file> <kv-mount-path>
 
 # OR you can use --file too instead of -file
 
-vault-kv-backup <kv-mount-path> --file <path-to-vault-kv-backup-json-file>
+vault-kv-backup --file <path-to-vault-kv-backup-json-file> <kv-mount-path>
 
 # quietly backs up all vault KV v2 Secrets Engine Secrets to the JSON file
 # this will just show dots (.) for progress
-vault-kv-backup <kv-mount-path> -quiet -file <path-to-vault-kv-backup-json-file>
+vault-kv-backup -quiet -file <path-to-vault-kv-backup-json-file> <kv-mount-path>
 
 # OR you can use --quiet too instead of -quiet
 
-vault-kv-backup <kv-mount-path> --quiet --file <path-to-vault-kv-backup-json-file>
+vault-kv-backup --quiet --file <path-to-vault-kv-backup-json-file> <kv-mount-path>
 `
 
 func main() {
