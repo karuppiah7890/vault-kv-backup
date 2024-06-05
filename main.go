@@ -14,7 +14,16 @@ import (
 var usage = `
 usage: vault-kv-backup [-quiet|--quiet] [-file|-file <vault-kv-backup-json-file-path>] <kv-mount-path>
 
-Usage of ./vault-kv-backup:
+Note that the flags MUST come before the arguments
+
+arguments of ./vault-kv-backup:
+
+  <kv-mount-path> string
+    vault kv v2 secrets engine mount path for backing up the
+    vault kv v2 secrets engine secrets present in that mount
+    path
+
+flags of ./vault-kv-backup:
 
   -file / --file string
       vault kv backup json file path (default "vault_kv_backup.json")
