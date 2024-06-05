@@ -347,6 +347,148 @@ $ cat my_secret_backup.json | jq
 
 As you can see, all the secrets in the Vault KV v2 Secrets Engine mounted at `secret/` mount path have been backed up :) The secrets have the secret path and the secret content / data itself :)
 
+# Possible Errors
+
+There are quite some possible errors you can face. Mostly relating to one of the following
+
+- DNS Resolution issues. If you are accessing Vault using it's domain name (DNS record), and not an IP address, then ensure that the DNS resolution works well
+- Connectivity issues with Vault. Ensure you have good network connectivity to the Vault system. Ensure the IP you are connecting to is right and belong to the Vault API server, and also check the API server port too.
+- Access / Authorization issues. Ensure you have enough access to list and read the Vault KV v2 Secrets Engine that you want to take backup of
+
+Example access errors / authorization errors / permission errors -
+
+I'll create a token with half baked access and not full access, let's see how that goes -
+
+```bash
+$ export VAULT_ADDR='http://127.0.0.1:8200'
+$ export VAULT_TOKEN="root"
+
+$ vault policy write half_baked_read_access1 -
+# KV v2 secrets engine mount path is "secret"
+path "secret/*" {
+  capabilities = ["list"]
+}
+
+$ vault policy read half_baked_read_access1
+# KV v2 secrets engine mount path is "secret"
+path "secret/*" {
+  capabilities = ["list"]
+}
+
+$ vault token create -no-default-policy -policy half_baked_read_access1
+Key                  Value
+---                  -----
+token                hvs.CAESIN-lzzO7k9Ohmixj7U-z3yLgvQ0hJwR0Il2kIlc1jvTAGh4KHGh2cy4zcEE4MzVUa2dCZ3N3VmFuUU1WV0wycUU
+token_accessor       2gLBsSST5pAJ1F7hw1d5W6v2
+token_duration       768h
+token_renewable      true
+token_policies       ["half_baked_read_access1"]
+identity_policies    []
+policies             ["half_baked_read_access1"]
+```
+
+Now, let's use this token to do a backup of secrets in the Vault KV v2 Secrets Engine mounted at `secret/`
+
+```bash
+$ export VAULT_ADDR='http://127.0.0.1:8200'
+$ export VAULT_TOKEN="hvs.CAESIN-lzzO7k9Ohmixj7U-z3yLgvQ0hJwR0Il2kIlc1jvTAGh4KHGh2cy4zcEE4MzVUa2dCZ3N3VmFuUU1WV0wycUU"
+
+$ ./vault-kv-backup -quiet -file my_another_secret_backup.json secret
+.2024/06/05 23:53:32 error occurred while getting latest version of the secret at path `foo`: error encountered while reading secret at secret/data/foo: Error making API request.
+
+URL: GET http://127.0.0.1:8200/v1/secret/data/foo
+Code: 403. Errors:
+
+* 1 error occurred:
+	* permission denied
+```
+
+Notice how it was able to list the secrets and understand that there's `foo` in it, but not able to read it? This is because of the lack of access. Similar example below -
+
+```bash
+$ vault policy write half_baked_read_access2 -
+# KV v2 secrets engine mount path is "secret"
+path "secret/*" {
+  capabilities = ["read"]
+}
+Success! Uploaded policy: half_baked_read_access2
+
+$ vault policy read half_baked_read_access2
+# KV v2 secrets engine mount path is "secret"
+path "secret/*" {
+  capabilities = ["read"]
+}
+
+$ vault token create -no-default-policy -policy half_baked_read_access2
+Key                  Value
+---                  -----
+token                hvs.CAESIIxGBE-N0fR6OlHa_yz-r2cNqIJptc97R07HDgZFKwWqGh4KHGh2cy5Sazd0NE5FODc5bXhvZmhRS005RmNBbnk
+token_accessor       MJxiU0eHd0eHs9FgVUAfWrRr
+token_duration       768h
+token_renewable      true
+token_policies       ["half_baked_read_access2"]
+identity_policies    []
+policies             ["half_baked_read_access2"]
+```
+
+Now, let's use this token to do a backup of secrets in the Vault KV v2 Secrets Engine mounted at `secret/`
+
+```bash
+$ export VAULT_ADDR='http://127.0.0.1:8200'
+$ export VAULT_TOKEN="hvs.CAESIIxGBE-N0fR6OlHa_yz-r2cNqIJptc97R07HDgZFKwWqGh4KHGh2cy5Sazd0NE5FODc5bXhvZmhRS005RmNBbnk"
+
+$ ./vault-kv-backup -quiet -file my_another_secret_backup.json secret
+2024/06/06 00:02:35 error occurred while listing metadata at path `secret/metadata`: Error making API request.
+
+URL: GET http://127.0.0.1:8200/v1/secret/metadata?list=true
+Code: 403. Errors:
+
+* 1 error occurred:
+	* permission denied
+
+$ vault kv get -mount secret foo
+= Secret Path =
+secret/data/foo
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2024-06-05T18:20:42.190213Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            1
+
+==== Data ====
+Key     Value
+---     -----
+bar     baz
+blah    bloo
+blee    bley
+
+$ vault kv get -mount secret something/over/here
+========= Secret Path =========
+secret/data/something/over/here
+
+======= Metadata =======
+Key                Value
+---                -----
+created_time       2024-06-05T18:20:52.733659Z
+custom_metadata    <nil>
+deletion_time      n/a
+destroyed          false
+version            1
+
+====== Data ======
+Key          Value
+---          -----
+something    map[another-thing:map[yet-another-thing:map[and-the-one-more-thing:haha, okay, right! and-then-something:okay]]]
+```
+
+As you can see, it can read secrets in Vault KV v2 Secrets Engine at `secret/` mount path. But it can't list stuff, like list metadata, which is important for us to know all the secrets present in the mount path and inside it in a recursive manner, so the `vault-kv-backup` tool fails to work without that access / permission and that's clear from the above error too
+
+Also, if there's not enough permissions in other ways also it won't work - like, access to list and read some secrets but not others, all within the same Vault KV v2 Secrets Engine mounted at a particular path. Also, if there's some explicit `deny` on some secret / secrets or secret path / secrets path, then that will also cause problems for the tool. As of now, the tool abruptly stops when there's such an error
+
 # Future Ideas
 
 - Support backing up multiple specific KV v2 secrets engine secrets in a single backup at once by providing a file which contains the mount paths of the secrets engines to be backed up, or by providing the mount paths of the secrets engines as arguments to the CLI, or provide the ability to use either of the two or even both
