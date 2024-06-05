@@ -491,7 +491,7 @@ Also, if there's not enough permissions in other ways also it won't work - like,
 
 # Future Ideas
 
-- Any and all issues in the [GitHub Issues](./issues) section
+- Any and all issues in the [GitHub Issues](issues) section
 
 - Allow user to say "It's okay if the tool cannot backup some secrets and/ some secret paths, due to permission issues. Just backup the secrets the tool can" and be able to skip intermittent errors here and there and ignore the errors than abruptly stop at errors
 
