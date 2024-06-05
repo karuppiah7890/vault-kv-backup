@@ -18,3 +18,7 @@
   - only latest/all versions of secrets
   - metadata of secrets
   - configuration of secrets engines
+
+# Contributing
+
+Please look at https://github.com/karuppiah7890/vault-tooling-contributions for some basic details on how you can contribute
