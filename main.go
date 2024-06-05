@@ -12,8 +12,41 @@ import (
 )
 
 var usage = `
-usage: vault-kv-backup <kv-mount-path>
+usage: vault-kv-backup <kv-mount-path> [-quiet|--quiet] [-file|-file <vault-kv-backup-json-file-path>]
 
+Usage of ./vault-kv-backup:
+
+  -file / --file string
+      vault kv backup json file path (default "vault_kv_backup.json")
+
+  -quiet / --quiet
+      quiet progress (default false).
+      By default vault-kv-backup CLI will show a lot of details
+      about the backup process and detailed progress during the
+      backup process
+
+  -h / -help / --help
+      show help
+
+examples:
+
+# show help
+vault-kv-backup -h
+
+# backs up all vault KV v2 Secrets Engine Secrets to the JSON file
+vault-kv-backup <kv-mount-path> -file <path-to-vault-kv-backup-json-file>
+
+# OR you can use --file too instead of -file
+
+vault-kv-backup <kv-mount-path> --file <path-to-vault-kv-backup-json-file>
+
+# quietly backs up all vault KV v2 Secrets Engine Secrets to the JSON file
+# this will just show dots (.) for progress
+vault-kv-backup <kv-mount-path> -quiet -file <path-to-vault-kv-backup-json-file>
+
+# OR you can use --quiet too instead of -quiet
+
+vault-kv-backup <kv-mount-path> --quiet --file <path-to-vault-kv-backup-json-file>
 `
 
 func main() {
