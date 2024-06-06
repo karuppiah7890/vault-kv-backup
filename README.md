@@ -4,7 +4,7 @@ Using this CLI tool, you can backup Vault KV v2 Secrets Engine Secrets from a Va
 
 Note: The tool is written in Golang and uses the Vault Official Golang API. The Official Vault Golang API documentation is here - https://pkg.go.dev/github.com/hashicorp/vault/api
 
-Note: The tool needs Vault credentials of a user/account that has access to Vault, to read and list the Vault KV v2 Secrets Engine Secrets that you want to backup.
+Note: The tool needs Vault credentials of a user/account that has access to Vault, to read and list the Vault KV v2 Secrets Engine Secrets that you want to backup. Look at [Authorization Details for the Vault Credentials](#authorization-details-for-the-vault-credentials) for more details
 
 Note: We have tested this only with some versions of Vault (like v1.15.x). So beware to test this in a testing environment with whatever version of Vault you are using, before using this in critical environments like production! Also, ensure that the testing environment is as close to your production environment as possible so that your testing makes sense
 
